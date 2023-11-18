@@ -6,6 +6,7 @@
 //  Copyright 2010 d3i. All rights reserved.
 //
 
+#include <MacTypes.h>
 #import <QuartzCore/QuartzCore.h>
 #import "IDMPhotoBrowser.h"
 #import "IDMZoomingScrollView.h"
@@ -574,13 +575,15 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
 }
 
 - (UIImage*)getImageFromView:(UIView *)view {
-    
-    UIGraphicsImageRendererFormat *format = [UIGraphicsImageRendererFormat defaultFormat];
-    UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:view.frame.size format:format];
-    UIImage *resultImage = [renderer imageWithActions:^(UIGraphicsImageRendererContext * _Nonnull rendererContext) {
-        [view.layer renderInContext: rendererContext.CGContext];
-    }];
-    return resultImage;
+   
+    if (!view) {
+        return nil;
+    }
+    UIGraphicsBeginImageContextWithOptions(view.bounds.size, YES, 2);
+    [view.layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
 }
 
 - (UIViewController *)topviewController
